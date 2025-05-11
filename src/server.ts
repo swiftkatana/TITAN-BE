@@ -1,16 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import quotesRouter from './routes/quotes';
-
+import dotenv from 'dotenv';
 const app = express();
+dotenv.config();
 const PORT = process.env.PORT || 3002;
 
+import quotesRouter from './routes/quotes';
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
+  max: 5,
+  windowMs: 60 * 1000, // 1 minute
+  message: 'Too many requests, please try again later.'
 });
 
 app.use(cors());

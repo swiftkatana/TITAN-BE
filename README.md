@@ -1,85 +1,88 @@
 # Quotes App Backend
 
-This is the backend server for the Quotes App, built with Express and TypeScript. It fetches quotes from the FavQs API, applies retry and caching logic, and exposes a single `/quotes` endpoint.
+This backend service is built with **Node.js**, **Express**, and **TypeScript**. It integrates with the [FavQs API](https://favqs.com/api/) to retrieve inspirational quotes, applying caching, retry logic, and conditional rate limiting to improve performance and reliability.
 
 ---
 
 ## 🔧 Setup Instructions
 
 ### 1. Install Dependencies
+
 ```bash
 cd backend
 npm install
 ```
 
-### 2. Add Environment Variables
-Create a `.env` file:
-```
-FAVQS_API_KEY=your_favqs_api_key_here
+### 2. Environment Variables
+
+Create a `.env` file in the `backend` directory:
+
+```env
+FAVQS_API_KEY=your_favqs_token
 PORT=3001
 ```
 
 ### 3. Run the Server
-For development with auto-reload:
+
 ```bash
+# Development with hot reload
 npm run dev
-```
-For production:
-```bash
+
+# Production
 npm run build && npm start
 ```
 
 ---
 
-## 📌 Endpoint
+## 📌 API Endpoint
 
 ### `GET /quotes`
-Fetches quotes from the FavQs API.
 
-#### Query Parameters
-- `count` (required): Number of quotes to fetch (1–50)
-- `tag` (optional): Filter quotes by a specific tag
+Returns a full page of quotes from the FavQs API.
 
-#### Example
+#### Query Parameters:
+
+* `page` (number, required): Page number to fetch from FavQs
+* `tag` (string, optional): Filter by quote tag (e.g. `life`, `success`)
+
+#### Example:
+
 ```
-GET http://localhost:3001/quotes?count=5&tag=life
+GET http://localhost:3001/quotes?page=3&tag=inspirational
 ```
+
+#### Behavior:
+
+* If the page is cached, it is returned immediately and does **not** count against the rate limit.
+* If not cached, it fetches from the FavQs API with retries and stores the result in memory.
 
 ---
 
 ## ✅ Features
-- Rate-limited using `express-rate-limit`
-- In-memory caching via `node-cache`
-- Retry logic with exponential backoff on API errors
-- Fallback quotes in case of API failure
-- Input sanitization and edge case handling
 
----
-
-## 🛠 Technologies
-- Node.js + Express
-- TypeScript
-- Axios
-- dotenv
-- node-cache
-- express-rate-limit
+* 🔁 Retry logic on failed API requests (up to 3 times)
+* 💾 In-memory caching with `node-cache`
+* 🔐 Conditional rate limiter (using `express-rate-limit`)
+* 🔎 Tag filtering and page navigation support
 
 ---
 
 ## 📁 Folder Structure
+
 ```
 backend/
 ├── src/
-│   ├── controllers/       # Express handlers
-│   ├── routes/            # Route definitions
-│   ├── services/          # External API + caching
-│   ├── types/             # Shared interfaces
+│   ├── controllers/       # Handles HTTP requests
+│   ├── routes/            # Express routes
+│   ├── services/          # API logic and caching
+│   ├── types/             # Shared TypeScript interfaces
 │   └── server.ts          # App entry point
 ```
 
 ---
 
-## ⚙️ Scripts
+## 🧪 Scripts
+
 ```json
 "scripts": {
   "dev": "ts-node-dev --respawn src/server.ts",
@@ -90,5 +93,17 @@ backend/
 
 ---
 
+## 🛠 Technologies Used
+
+* Node.js
+* Express.js
+* TypeScript
+* Axios
+* NodeCache
+* express-rate-limit
+
+---
+
 ## 📄 License
+
 MIT
